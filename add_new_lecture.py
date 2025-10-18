@@ -94,6 +94,7 @@ def main():
     except (FileNotFoundError, ValueError) as e:
         print(f"Ошибка хранилища: {e}", file=sys.stderr)
         sys.exit(1)
+
     except Exception as e:
         print(f"Произошла непредвиденная ошибка: {e}", file=sys.stderr)
         sys.exit(1)
