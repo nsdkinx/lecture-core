@@ -210,9 +210,12 @@ class Lecture:
         try:
             yaml_front_matter = dump_yaml(metadata_dict)
         except Exception as e:
-            raise IOError(f"Error creating YAML for {self.uid}: {e}")
+            raise IOError("Error creating YAML for {}: {}".format(self.uid, e))
 
-        full_content = f"---\n{yaml_front_matter}---\n\n{self.content}"
+        full_content = "---\n{}---\n\n{}".format(
+            yaml_front_matter,
+            self.content
+        )
 
         new_filename_base = self.expected_filename
         new_folder_path = os.path.join(
@@ -220,7 +223,9 @@ class Lecture:
             self.subject_name,
             new_filename_base
         )
-        new_file_path = os.path.join(new_folder_path, f"{new_filename_base}.md")
+        new_file_path = os.path.join(
+            new_folder_path, "{}.md".format(new_filename_base)
+        )
 
         # Use a placeholder for the original path if it's a new file
         original_file_path = self.path or ""
@@ -236,15 +241,25 @@ class Lecture:
                 # Case 1a: The entire folder needs to be renamed.
                 # Abort if the destination folder already exists.
                 if os.path.exists(new_folder_path):
-                    raise IOError(f"Cannot move lecture: destination folder '{new_folder_path}' already exists.")
+                    raise IOError(
+                        "Cannot move lecture: destination folder '{}' already exists.".format(new_folder_path)
+                    )
 
-                print(f"Renaming lecture folder from '{original_folder_path}' to '{new_folder_path}'")
+                print(
+                    "Renaming lecture folder from '{}' to '{}'".format(
+                        original_folder_path, new_folder_path
+                    )
+                )
                 shutil.move(original_folder_path, new_folder_path)
 
             elif os.path.exists(original_file_path):
                 # Case 1b: Only the filename inside the folder needs to be renamed.
                 # This check is needed if the old markdown file exists at the original_file_path.
-                print(f"Renaming lecture file from '{original_file_path}' to '{new_file_path}'")
+                print(
+                    "Renaming lecture file from '{}' to '{}'".format(
+                        original_file_path, new_file_path
+                    )
+                )
                 os.rename(original_file_path, new_file_path)
 
         os.makedirs(new_folder_path, exist_ok=True)
@@ -254,10 +269,14 @@ class Lecture:
                 f.write(full_content)
 
             self.path = new_file_path
-            print(f"Lecture '{self.uid}' successfully saved to {self.path}")
+            print(
+                "Lecture '{}' successfully saved to {}".format(
+                    self.uid, self.path
+                )
+            )
 
         except IOError as e:
-            print(f"Error: Failed to write file to {new_file_path}: {e}")
+            print("Error: Failed to write file to {}: {}".format(new_file_path, e))
 
         return None
 
